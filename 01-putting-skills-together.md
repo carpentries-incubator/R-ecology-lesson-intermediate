@@ -74,8 +74,19 @@ Let's start off with the new surveys data. First we will read it into R:
 surveys_new <- read_csv("data/raw/surveys_new.csv")
 ```
 
-```{.error}
-Error: 'data/raw/surveys_new.csv' does not exist in current working directory ('/home/runner/work/R-ecology-lesson-intermediate/R-ecology-lesson-intermediate/site/built').
+```{.warning}
+Warning: One or more parsing issues, see `problems()` for details
+```
+
+```{.output}
+Rows: 18676 Columns: 7
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (3): date (mm/dd/yyyy), species_id, sex
+dbl (4): record_id, plot_id, hindfoot_length, weight
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
 You will notice it contains a lot of columns from our previous `surveys` data, but not all of the columns. Some of them are only found in our other `plots_new.csv` and `species_new.txt` files. 
@@ -88,10 +99,6 @@ surveys_new <- surveys_new %>%
   rename(date = `date (mm/dd/yyyy)`)
 ```
 
-```{.error}
-Error in rename(., date = `date (mm/dd/yyyy)`): object 'surveys_new' not found
-```
-
 
 Let's take a look at a summary of our data using `summary()`.
 
@@ -100,8 +107,23 @@ Let's take a look at a summary of our data using `summary()`.
 summary(surveys_new)
 ```
 
-```{.error}
-Error in summary(surveys_new): object 'surveys_new' not found
+```{.output}
+   record_id         date              plot_id       species_id       
+ Min.   :16879   Length:18676       Min.   : 1.00   Length:18676      
+ 1st Qu.:21545   Class :character   1st Qu.: 5.00   Class :character  
+ Median :26214   Mode  :character   Median :12.00   Mode  :character  
+ Mean   :26214                      Mean   :11.33                     
+ 3rd Qu.:30881                      3rd Qu.:17.00                     
+ Max.   :35549                      Max.   :24.00                     
+                                                                      
+     sex            hindfoot_length     weight      
+ Length:18676       Min.   : 2.00   Min.   :   4.0  
+ Class :character   1st Qu.:21.00   1st Qu.:  19.0  
+ Mode  :character   Median :26.00   Median :  32.0  
+                    Mean   :27.08   Mean   : 873.7  
+                    3rd Qu.:36.00   3rd Qu.:  47.0  
+                    Max.   :64.00   Max.   :9999.0  
+                    NA's   :1380                    
 ```
 
 The `summary()` function is often useful for detecting outliers or clearly incorrect values, since we get a `Min.` and `Max.` value for each numeric column. For example, we see that `month` goes from 1 to 12 and `day` goes from 1 to 31, so no issues there. However, we do notice that `weight` has a max value of 9999. Sometimes people will use extreme and impossible values to denote a missing value. It is worth checking with our collaborators to make sure this is the case, but we will assume that's what happened. 
@@ -113,8 +135,11 @@ Finally, we actually got a warning message about a **parsing** issue. This messa
 problems(surveys_new)
 ```
 
-```{.error}
-Error in withCallingHandlers(expr, warning = function(w) if (inherits(w, : object 'surveys_new' not found
+```{.output}
+# A tibble: 1 × 5
+    row   col expected actual file                                              
+  <int> <int> <chr>    <chr>  <chr>                                             
+1    19     6 a double 19'    /home/runner/work/R-ecology-lesson-intermediate/R…
 ```
 
 The output shows that in the 19th row and 8th column of the CSV, `read_csv()` expected a double, or numeric, value. Instead, what it got was `19'`. That stray quotation mark was unexpected, so `read_csv()` notified us. Let's go see what value is actually there for `surveys_new`. It was in the 19th row of the CSV, which includes the header row containing column names, so we should look at the 18th row of our data.frame. The 8th column is `hindfoot_length`. We can use the `head()` function to look at the first 20 rows.
@@ -125,8 +150,30 @@ surveys_new %>%
   head(n=20)
 ```
 
-```{.error}
-Error in head(., n = 20): object 'surveys_new' not found
+```{.output}
+# A tibble: 20 × 7
+   record_id date     plot_id species_id sex   hindfoot_length weight
+       <dbl> <chr>      <dbl> <chr>      <chr>           <dbl>  <dbl>
+ 1     16879 1/6/1990       1 DM         F                  37     35
+ 2     16880 1/6/1990       1 OL         M                  21     28
+ 3     16881 1/6/1990       6 PF         M                  16      7
+ 4     16882 1/6/1990      23 RM         F                  17      9
+ 5     16883 1/6/1990      12 RM         M                  17     10
+ 6     16884 1/6/1990      24 RM         M                  17      9
+ 7     16885 1/6/1990      12 SF         M                  25     35
+ 8     16886 1/6/1990      24 SH         F                  30     73
+ 9     16887 1/6/1990      12 SF         M                  28     44
+10     16888 1/6/1990      17 DO         M                  36     55
+11     16889 1/6/1990      21 SF         M                  29     55
+12     16890 1/6/1990      12 OT         M                  22     23
+13     16891 1/6/1990      12 DO         F                  36     53
+14     16892 1/6/1990      21 AB         <NA>               NA   9999
+15     16893 1/6/1990      12 OT         F                  21     24
+16     16894 1/6/1990       1 OT         F                  21     20
+17     16895 1/6/1990      12 SF         F                  27     75
+18     16896 1/6/1990      12 RM         M                  NA     11
+19     16897 1/6/1990      21 SF         F                  29     46
+20     16898 1/6/1990      23 RM         M                  18     11
 ```
 
 Because `read_csv()` didn't know what to do with the value `19'`, there is an `NA` for `hindfoot_length` in row 18. It is likely that the true value was `19` and the stray quotation mark was simply a typo. If we want to change that value, we can do it by referring to the `record_id`, since it is a unique identifier for each row. We will use the function `if_else()` to actually replace the value. This function takes a logical statement as its first argument, then a value to return if that statement is `TRUE`, and a value to return if it is `FALSE`. Take a look at this example:
@@ -150,19 +197,35 @@ What we will do is take `surveys_new` and mutate the `hindfoot_length` column. I
 ```r
 surveys_new <- surveys_new %>% 
   mutate(hindfoot_length = ifelse(record_id == 16896, 19, hindfoot_length)) 
-```
 
-```{.error}
-Error in mutate(., hindfoot_length = ifelse(record_id == 16896, 19, hindfoot_length)): object 'surveys_new' not found
-```
-
-```r
 surveys_new %>% 
   head(n=20)
 ```
 
-```{.error}
-Error in head(., n = 20): object 'surveys_new' not found
+```{.output}
+# A tibble: 20 × 7
+   record_id date     plot_id species_id sex   hindfoot_length weight
+       <dbl> <chr>      <dbl> <chr>      <chr>           <dbl>  <dbl>
+ 1     16879 1/6/1990       1 DM         F                  37     35
+ 2     16880 1/6/1990       1 OL         M                  21     28
+ 3     16881 1/6/1990       6 PF         M                  16      7
+ 4     16882 1/6/1990      23 RM         F                  17      9
+ 5     16883 1/6/1990      12 RM         M                  17     10
+ 6     16884 1/6/1990      24 RM         M                  17      9
+ 7     16885 1/6/1990      12 SF         M                  25     35
+ 8     16886 1/6/1990      24 SH         F                  30     73
+ 9     16887 1/6/1990      12 SF         M                  28     44
+10     16888 1/6/1990      17 DO         M                  36     55
+11     16889 1/6/1990      21 SF         M                  29     55
+12     16890 1/6/1990      12 OT         M                  22     23
+13     16891 1/6/1990      12 DO         F                  36     53
+14     16892 1/6/1990      21 AB         <NA>               NA   9999
+15     16893 1/6/1990      12 OT         F                  21     24
+16     16894 1/6/1990       1 OT         F                  21     20
+17     16895 1/6/1990      12 SF         F                  27     75
+18     16896 1/6/1990      12 RM         M                  19     11
+19     16897 1/6/1990      21 SF         F                  29     46
+20     16898 1/6/1990      23 RM         M                  18     11
 ```
 
 We can actually use `ifelse()` to fix the values of `9999` in the `weight` column as well. 
@@ -171,19 +234,35 @@ We can actually use `ifelse()` to fix the values of `9999` in the `weight` colum
 ```r
 surveys_new <- surveys_new %>% 
   mutate(weight = ifelse(weight == 9999, NA, weight))
-```
 
-```{.error}
-Error in mutate(., weight = ifelse(weight == 9999, NA, weight)): object 'surveys_new' not found
-```
-
-```r
 surveys_new %>% 
   head(n=20)
 ```
 
-```{.error}
-Error in head(., n = 20): object 'surveys_new' not found
+```{.output}
+# A tibble: 20 × 7
+   record_id date     plot_id species_id sex   hindfoot_length weight
+       <dbl> <chr>      <dbl> <chr>      <chr>           <dbl>  <dbl>
+ 1     16879 1/6/1990       1 DM         F                  37     35
+ 2     16880 1/6/1990       1 OL         M                  21     28
+ 3     16881 1/6/1990       6 PF         M                  16      7
+ 4     16882 1/6/1990      23 RM         F                  17      9
+ 5     16883 1/6/1990      12 RM         M                  17     10
+ 6     16884 1/6/1990      24 RM         M                  17      9
+ 7     16885 1/6/1990      12 SF         M                  25     35
+ 8     16886 1/6/1990      24 SH         F                  30     73
+ 9     16887 1/6/1990      12 SF         M                  28     44
+10     16888 1/6/1990      17 DO         M                  36     55
+11     16889 1/6/1990      21 SF         M                  29     55
+12     16890 1/6/1990      12 OT         M                  22     23
+13     16891 1/6/1990      12 DO         F                  36     53
+14     16892 1/6/1990      21 AB         <NA>               NA     NA
+15     16893 1/6/1990      12 OT         F                  21     24
+16     16894 1/6/1990       1 OT         F                  21     20
+17     16895 1/6/1990      12 SF         F                  27     75
+18     16896 1/6/1990      12 RM         M                  19     11
+19     16897 1/6/1990      21 SF         F                  29     46
+20     16898 1/6/1990      23 RM         M                  18     11
 ```
 
 ::::::::::::::::::::::::::::::::::::: challenge 
@@ -243,8 +322,8 @@ surveys_new <- surveys_new %>%
   mutate(date = mdy(date))
 ```
 
-```{.error}
-Error in mutate(., date = mdy(date)): object 'surveys_new' not found
+```{.warning}
+Warning: 6 failed to parse.
 ```
 
 We got a warning message about 6 dates failing to parse. This means that the `mdy()` function encountered 6 dates that it wasn't able to identify correctly. When `lubridate` functions fail to parse dates, they will return an `NA` value instead. To find the rows where this happened, we can use `filter()`:
@@ -255,8 +334,16 @@ surveys_new %>%
   filter(is.na(date))
 ```
 
-```{.error}
-Error in filter(., is.na(date)): object 'surveys_new' not found
+```{.output}
+# A tibble: 6 × 7
+  record_id date   plot_id species_id sex   hindfoot_length weight
+      <dbl> <date>   <dbl> <chr>      <chr>           <dbl>  <dbl>
+1     22258 NA           8 AH         <NA>               NA     NA
+2     22261 NA           9 DM         F                  37     45
+3     30595 NA          18 PB         F                  25     34
+4     30610 NA           2 PB         F                  25     31
+5     30638 NA          20 PP         F                  22     20
+6     31394 NA          12 OT         F                  20     29
 ```
 
 ::::::::::::::::::::::::::::::::::::: challenge 
@@ -279,8 +366,20 @@ read_csv("data/raw/surveys_new.csv") %>%
   filter(record_id %in% c(22258, 22261, 30595, 30610, 30638, 31394))
 ```
 
-```{.error}
-Error: 'data/raw/surveys_new.csv' does not exist in current working directory ('/home/runner/work/R-ecology-lesson-intermediate/R-ecology-lesson-intermediate/site/built').
+```{.warning}
+Warning: One or more parsing issues, see `problems()` for details
+```
+
+```{.output}
+# A tibble: 6 × 7
+  record_id `date (mm/dd/yyyy)` plot_id species_id sex   hindfoot_length weight
+      <dbl> <chr>                 <dbl> <chr>      <chr>           <dbl>  <dbl>
+1     22258 4/31/1995                 8 AH         <NA>               NA   9999
+2     22261 4/31/1995                 9 DM         F                  37     45
+3     30595 4/31/2000                18 PB         F                  25     34
+4     30610 4/31/2000                 2 PB         F                  25     31
+5     30638 4/31/2000                20 PP         F                  22     20
+6     31394 9/31/2000                12 OT         F                  20     29
 ```
 
 The dates are wrong because they are the 31st day in a month that only has 30 days, like April or September. `lubridate` doesn't recognize these as valid dates. The same thing can happen with things like dates in February during non-leap years.
@@ -298,18 +397,25 @@ surveys_new <- surveys_new %>%
          month = month(date),
          day = day(date)) %>% 
   select(-date)
-```
 
-```{.error}
-Error in mutate(., year = year(date), month = month(date), day = day(date)): object 'surveys_new' not found
-```
-
-```r
 surveys_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'surveys_new' not found
+```{.output}
+# A tibble: 18,676 × 9
+   record_id plot_id species_id sex   hindfoot_length weight  year month   day
+       <dbl>   <dbl> <chr>      <chr>           <dbl>  <dbl> <dbl> <dbl> <int>
+ 1     16879       1 DM         F                  37     35  1990     1     6
+ 2     16880       1 OL         M                  21     28  1990     1     6
+ 3     16881       6 PF         M                  16      7  1990     1     6
+ 4     16882      23 RM         F                  17      9  1990     1     6
+ 5     16883      12 RM         M                  17     10  1990     1     6
+ 6     16884      24 RM         M                  17      9  1990     1     6
+ 7     16885      12 SF         M                  25     35  1990     1     6
+ 8     16886      24 SH         F                  30     73  1990     1     6
+ 9     16887      12 SF         M                  28     44  1990     1     6
+10     16888      17 DO         M                  36     55  1990     1     6
+# … with 18,666 more rows
 ```
 
 <!-- ::::::::::::::::::::::::::::::::::::: challenge  -->
@@ -346,16 +452,35 @@ We have to give `read_delim()` three arguments. First is the file path, just lik
 species_new <- read_delim("data/raw/species_new.txt", delim = " ", quote = '"')
 ```
 
-```{.error}
-Error: 'data/raw/species_new.txt' does not exist in current working directory ('/home/runner/work/R-ecology-lesson-intermediate/R-ecology-lesson-intermediate/site/built').
+```{.output}
+Rows: 54 Columns: 3
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: " "
+chr (3): species_id, species_name, taxa
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
 ```r
 species_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'species_new' not found
+```{.output}
+# A tibble: 54 × 3
+   species_id species_name                    taxa   
+   <chr>      <chr>                           <chr>  
+ 1 AB         Amphispiza bilineata            Bird   
+ 2 AH         Ammospermophilus harrisi        Rodent 
+ 3 AS         Ammodramus savannarum           Bird   
+ 4 BA         Baiomys taylori                 Rodent 
+ 5 CB         Campylorhynchus brunneicapillus Bird   
+ 6 CM         Calamospiza melanocorys         Bird   
+ 7 CQ         Callipepla squamata             Bird   
+ 8 CS         Crotalus scutalatus             Reptile
+ 9 CT         Cnemidophorus tigris            Reptile
+10 CU         Cnemidophorus uniparens         Reptile
+# … with 44 more rows
 ```
 
 What we get back is a tibble, formatted just like it would have been if our data were in a CSV.
@@ -368,18 +493,25 @@ We pipe `species_new` into the `separate()` function, then give it several other
 ```r
 species_new <- species_new %>%
   separate(species_name, into = c("genus", "species"), sep = " ")
-```
 
-```{.error}
-Error in separate(., species_name, into = c("genus", "species"), sep = " "): object 'species_new' not found
-```
-
-```r
 species_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'species_new' not found
+```{.output}
+# A tibble: 54 × 4
+   species_id genus            species         taxa   
+   <chr>      <chr>            <chr>           <chr>  
+ 1 AB         Amphispiza       bilineata       Bird   
+ 2 AH         Ammospermophilus harrisi         Rodent 
+ 3 AS         Ammodramus       savannarum      Bird   
+ 4 BA         Baiomys          taylori         Rodent 
+ 5 CB         Campylorhynchus  brunneicapillus Bird   
+ 6 CM         Calamospiza      melanocorys     Bird   
+ 7 CQ         Callipepla       squamata        Bird   
+ 8 CS         Crotalus         scutalatus      Reptile
+ 9 CT         Cnemidophorus    tigris          Reptile
+10 CU         Cnemidophorus    uniparens       Reptile
+# … with 44 more rows
 ```
 
 There we go, now `species_new` is formatted like the similar columns in the older `surveys` data.
@@ -433,16 +565,31 @@ Finally, we can move on to the new `plots` data, in the `plots_new.csv` file. We
 plots_new <- read_csv("data/raw/plots_new.csv")
 ```
 
-```{.error}
-Error: 'data/raw/plots_new.csv' does not exist in current working directory ('/home/runner/work/R-ecology-lesson-intermediate/R-ecology-lesson-intermediate/site/built').
+```{.output}
+Rows: 1 Columns: 24
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (24): Plot 1, Plot 2, Plot 3, Plot 4, Plot 5, Plot 6, Plot 7, Plot 8, Pl...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
 ```r
 plots_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'plots_new' not found
+```{.output}
+# A tibble: 1 × 24
+  `Plot 1`       Plot …¹ Plot …² Plot …³ Plot …⁴ Plot …⁵ Plot …⁶ Plot …⁷ Plot …⁸
+  <chr>          <chr>   <chr>   <chr>   <chr>   <chr>   <chr>   <chr>   <chr>  
+1 Spectab exclo… Control Long-t… Control Rodent… Short-… Rodent… Control Specta…
+# … with 15 more variables: `Plot 10` <chr>, `Plot 11` <chr>, `Plot 12` <chr>,
+#   `Plot 13` <chr>, `Plot 14` <chr>, `Plot 15` <chr>, `Plot 16` <chr>,
+#   `Plot 17` <chr>, `Plot 18` <chr>, `Plot 19` <chr>, `Plot 20` <chr>,
+#   `Plot 21` <chr>, `Plot 22` <chr>, `Plot 23` <chr>, `Plot 24` <chr>, and
+#   abbreviated variable names ¹​`Plot 2`, ²​`Plot 3`, ³​`Plot 4`, ⁴​`Plot 5`,
+#   ⁵​`Plot 6`, ⁶​`Plot 7`, ⁷​`Plot 8`, ⁸​`Plot 9`
 ```
 
 It looks like our data are in a bit of a strange format. We have a column for each plot, and then a single row of data containing the plot type. If you look at our old `surveys` data, we had a single row for `plot_id` and a single row for `plot_type`. `surveys` contained this data in a **long** format, whereas `plots_new` has a **wide** format.
@@ -468,18 +615,25 @@ Take the `plots_new` data.frame and shape it into a long format. You should end 
 ```r
 plots_new <- plots_new %>% 
   pivot_longer(cols = everything(), names_to = "plot_id", values_to = "plot_type")
-```
 
-```{.error}
-Error in pivot_longer(., cols = everything(), names_to = "plot_id", values_to = "plot_type"): object 'plots_new' not found
-```
-
-```r
 plots_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'plots_new' not found
+```{.output}
+# A tibble: 24 × 2
+   plot_id plot_type                
+   <chr>   <chr>                    
+ 1 Plot 1  Spectab exclosure        
+ 2 Plot 2  Control                  
+ 3 Plot 3  Long-term Krat Exclosure 
+ 4 Plot 4  Control                  
+ 5 Plot 5  Rodent Exclosure         
+ 6 Plot 6  Short-term Krat Exclosure
+ 7 Plot 7  Rodent Exclosure         
+ 8 Plot 8  Control                  
+ 9 Plot 9  Spectab exclosure        
+10 Plot 10 Rodent Exclosure         
+# … with 14 more rows
 ```
 
 ::::::::::::::::::::::::
@@ -494,18 +648,25 @@ We will use `mutate()` to modify the `plot_id` column, and we will replace it wi
 ```r
 plots_new <- plots_new %>% 
   mutate(plot_id = str_replace(plot_id, "Plot ", ""))
-```
 
-```{.error}
-Error in mutate(., plot_id = str_replace(plot_id, "Plot ", "")): object 'plots_new' not found
-```
-
-```r
 plots_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'plots_new' not found
+```{.output}
+# A tibble: 24 × 2
+   plot_id plot_type                
+   <chr>   <chr>                    
+ 1 1       Spectab exclosure        
+ 2 2       Control                  
+ 3 3       Long-term Krat Exclosure 
+ 4 4       Control                  
+ 5 5       Rodent Exclosure         
+ 6 6       Short-term Krat Exclosure
+ 7 7       Rodent Exclosure         
+ 8 8       Control                  
+ 9 9       Spectab exclosure        
+10 10      Rodent Exclosure         
+# … with 14 more rows
 ```
 
 We successfully removed `"Plot "` from our `plot_id` column entries, so we are left with just the numbers. However, it is still a `character` column. The last step is to convert it to a numeric column.
@@ -514,18 +675,25 @@ We successfully removed `"Plot "` from our `plot_id` column entries, so we are l
 ```r
 plots_new <- plots_new %>% 
   mutate(plot_id = as.numeric(plot_id))
-```
 
-```{.error}
-Error in mutate(., plot_id = as.numeric(plot_id)): object 'plots_new' not found
-```
-
-```r
 plots_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'plots_new' not found
+```{.output}
+# A tibble: 24 × 2
+   plot_id plot_type                
+     <dbl> <chr>                    
+ 1       1 Spectab exclosure        
+ 2       2 Control                  
+ 3       3 Long-term Krat Exclosure 
+ 4       4 Control                  
+ 5       5 Rodent Exclosure         
+ 6       6 Short-term Krat Exclosure
+ 7       7 Rodent Exclosure         
+ 8       8 Control                  
+ 9       9 Spectab exclosure        
+10      10 Rodent Exclosure         
+# … with 14 more rows
 ```
 
 ## Joining the new data
@@ -543,8 +711,22 @@ There are several types of joins in the `dplyr` package, which you can [read mor
 left_join(surveys_new, plots_new, by = "plot_id")
 ```
 
-```{.error}
-Error in left_join(surveys_new, plots_new, by = "plot_id"): object 'surveys_new' not found
+```{.output}
+# A tibble: 18,676 × 10
+   record_id plot_id species_id sex   hindfoo…¹ weight  year month   day plot_…²
+       <dbl>   <dbl> <chr>      <chr>     <dbl>  <dbl> <dbl> <dbl> <int> <chr>  
+ 1     16879       1 DM         F            37     35  1990     1     6 Specta…
+ 2     16880       1 OL         M            21     28  1990     1     6 Specta…
+ 3     16881       6 PF         M            16      7  1990     1     6 Short-…
+ 4     16882      23 RM         F            17      9  1990     1     6 Rodent…
+ 5     16883      12 RM         M            17     10  1990     1     6 Control
+ 6     16884      24 RM         M            17      9  1990     1     6 Rodent…
+ 7     16885      12 SF         M            25     35  1990     1     6 Control
+ 8     16886      24 SH         F            30     73  1990     1     6 Rodent…
+ 9     16887      12 SF         M            28     44  1990     1     6 Control
+10     16888      17 DO         M            36     55  1990     1     6 Control
+# … with 18,666 more rows, and abbreviated variable names ¹​hindfoot_length,
+#   ²​plot_type
 ```
 
 Now we have our `surveys_new` dataframe, still with 18676 rows, but now each row has a value for `plot_type`, corresponding to its entry in `plot_id`. We can assign this back to `surveys_new`, so that it now contains the information from both dataframes.
@@ -554,27 +736,32 @@ Now we have our `surveys_new` dataframe, still with 18676 rows, but now each row
 surveys_new <- left_join(surveys_new, plots_new, by = "plot_id")
 ```
 
-```{.error}
-Error in left_join(surveys_new, plots_new, by = "plot_id"): object 'surveys_new' not found
-```
-
 We can repeat this process to get the information from `species_new`. `surveys_new` and `species_new` both have a `species_id` column, but we would like to add the `genus`, `species`, and `taxa` information to `surveys_new`.
 
 
 ```r
 surveys_new <- left_join(surveys_new, species_new, by = "species_id")
-```
 
-```{.error}
-Error in left_join(surveys_new, species_new, by = "species_id"): object 'surveys_new' not found
-```
-
-```r
 surveys_new
 ```
 
-```{.error}
-Error in eval(expr, envir, enclos): object 'surveys_new' not found
+```{.output}
+# A tibble: 18,676 × 13
+   record…¹ plot_id speci…² sex   hindf…³ weight  year month   day plot_…⁴ genus
+      <dbl>   <dbl> <chr>   <chr>   <dbl>  <dbl> <dbl> <dbl> <int> <chr>   <chr>
+ 1    16879       1 DM      F          37     35  1990     1     6 Specta… Dipo…
+ 2    16880       1 OL      M          21     28  1990     1     6 Specta… Onyc…
+ 3    16881       6 PF      M          16      7  1990     1     6 Short-… Pero…
+ 4    16882      23 RM      F          17      9  1990     1     6 Rodent… Reit…
+ 5    16883      12 RM      M          17     10  1990     1     6 Control Reit…
+ 6    16884      24 RM      M          17      9  1990     1     6 Rodent… Reit…
+ 7    16885      12 SF      M          25     35  1990     1     6 Control Sigm…
+ 8    16886      24 SH      F          30     73  1990     1     6 Rodent… Sigm…
+ 9    16887      12 SF      M          28     44  1990     1     6 Control Sigm…
+10    16888      17 DO      M          36     55  1990     1     6 Control Dipo…
+# … with 18,666 more rows, 2 more variables: species <chr>, taxa <chr>, and
+#   abbreviated variable names ¹​record_id, ²​species_id, ³​hindfoot_length,
+#   ⁴​plot_type
 ```
 
 Now our `surveys_new` dataframe has all the information from our 3 files, and the same number of columns as our original `surveys` data.
