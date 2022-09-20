@@ -253,7 +253,7 @@
         
 <section id="aio-00-introduction"><p>Content from <a href="00-introduction.html">Lessson introduction</a></p>
 <hr>
-<p> Last updated on 2022-09-13 | <a href="https://github.com/carpentries-incubator/R-ecology-lesson-intermediate/edit/main/episodes/00-introduction.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p> Last updated on 2022-09-20 | <a href="https://github.com/carpentries-incubator/R-ecology-lesson-intermediate/edit/main/episodes/00-introduction.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -335,7 +335,7 @@ Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use. 
  --></section></section><section id="aio-01-putting-skills-together"><p>Content from <a href="01-putting-skills-together.html">Putting it together</a></p>
 <hr>
-<p> Last updated on 2022-09-13 | <a href="https://github.com/carpentries-incubator/R-ecology-lesson-intermediate/edit/main/episodes/01-putting-skills-together.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p> Last updated on 2022-09-20 | <a href="https://github.com/carpentries-incubator/R-ecology-lesson-intermediate/edit/main/episodes/01-putting-skills-together.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -596,7 +596,7 @@ dbl (4): record_id, plot_id, hindfoot_length, weight
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <div id="challenge-1-find-a-specialized-function" class="callout-inner">
-<h3 class="callout-title">Challenge 1: Find a specialized function<a class="anchor" aria-label="anchor" href="#challenge-1-find-a-specialized-function"></a>
+<h3 class="callout-title">Challenge 1: Find a specialized function<a class="anchor" aria-label="anchor" href="#challenge1"></a>
 </h3>
 <div class="callout-content">
 <p>The <code>tidyverse</code> often has specialized functions for common data manipulation tasks, such as replacing a certain values with <code>NA</code>. There is a <code>tidyverse</code> function to replace a value in a vector with <code>NA</code>. Put your Googling skills to work and see if you can find the correct function.</p>
@@ -611,7 +611,7 @@ dbl (4): record_id, plot_id, hindfoot_length, weight
   Show me the solution
   </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The <code>dplyr</code> function <code>na_if()</code> will replace specific values in a vector to <code>NA</code>. To find this function, you can Google “tidyverse replace value with NA”. One of the first results is the <a href="https://dplyr.tidyverse.org/reference/na_if.html" class="external-link"><code>dplyr</code> documentation page</a> for the <code>na_if()</code> function.</p>
 <p>If you scroll down to the bottom section of the documentation, you will find several examples, including how to use the function inside <code>mutate()</code>.</p>
@@ -691,7 +691,7 @@ Attaching package: 'lubridate'</code></pre>
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <div id="challenge-2-find-the-bad-dates" class="callout-inner">
-<h3 class="callout-title">Challenge 2: Find the bad dates<a class="anchor" aria-label="anchor" href="#challenge-2-find-the-bad-dates"></a>
+<h3 class="callout-title">Challenge 2: Find the bad dates<a class="anchor" aria-label="anchor" href="#challenge2"></a>
 </h3>
 <div class="callout-content">
 <p>We have now located the rows with <code>NA</code> dates, but we probably want to know what the original date character strings looked like. Figure out what those dates were and why they might have been wrong.</p>
@@ -706,7 +706,7 @@ Attaching package: 'lubridate'</code></pre>
   Show me the solution
   </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <p>There are two basic approaches you could take. First, you could look directly at the old CSV and find the rows with bad dates based on their <code>record_id</code>.</p>
 <p>You could also read the data back into R and use <code>filter()</code> to pick out those specific rows via <code>record_id</code>:</p>
@@ -871,7 +871,7 @@ chr (3): species_id, species_name, taxa
   Convert column types when separating
   </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>The <code>separate()</code> function also has an argument called <code>convert</code>, which will automatically convert the types of your new columns. For example, if you had a column called <code>range</code> that had character strings like <code>"1990-1995"</code>, and you wanted to separate it into <code>start</code> and <code>end</code> columns, you would end up with character columns if you used <code>separate()</code> like we did above. However, if you use <code>convert = T</code>, the new columns will be converted to integers. Check out this short example below:</p>
 <div class="codewrapper sourceCode" id="cb38">
@@ -960,7 +960,7 @@ chr (24): Plot 1, Plot 2, Plot 3, Plot 4, Plot 5, Plot 6, Plot 7, Plot 8, Pl...
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <div id="challenge-3-reshape-plots_new" class="callout-inner">
-<h3 class="callout-title">Challenge 3: Reshape <code>plots_new</code><a class="anchor" aria-label="anchor" href="#challenge-3-reshape-plots_new"></a>
+<h3 class="callout-title">Challenge 3: Reshape <code>plots_new</code><a class="anchor" aria-label="anchor" href="#challenge3"></a>
 </h3>
 <div class="callout-content">
 <p>Take the <code>plots_new</code> data.frame and shape it into a long format. You should end up with two columns: <code>plot_id</code> containing the ID for each plot, and <code>plot_type</code> containing the type for each plot.</p>
@@ -975,7 +975,7 @@ chr (24): Plot 1, Plot 2, Plot 3, Plot 4, Plot 5, Plot 6, Plot 7, Plot 8, Pl...
   Show me the solution
   </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb46">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1317,7 +1317,7 @@ chr (24): Plot 1, Plot 2, Plot 3, Plot 4, Plot 5, Plot 6, Plot 7, Plot 8, Pl...
 <i class="callout-icon" data-feather="key"></i>
 </div>
 <div class="callout-inner">
-<h3 class="callout-title">Keypoints<a class="anchor" aria-label="anchor" href="#NA"></a>
+<h3 class="callout-title">Keypoints<a class="anchor" aria-label="anchor" href="#keypoints1"></a>
 </h3>
 <div class="callout-content">
 <ul>
@@ -1353,8 +1353,8 @@ any links that you are not going to use.
         <p>Materials licensed under <a href="LICENSE.html">CC-BY 4.0</a> by the authors</p>
         
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.9.5" class="external-link">sandpaper (0.9.5)</a>,
-        <a href="https://github.com/carpentries/pegboard/tree/0.3.1" class="external-link">pegboard (0.3.1)</a>,
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.10.0" class="external-link">sandpaper (0.10.0)</a>,
+        <a href="https://github.com/carpentries/pegboard/tree/0.3.2" class="external-link">pegboard (0.3.2)</a>,
       and <a href="https://github.com/carpentries/varnish/tree/0.2.4" class="external-link">varnish (0.2.4)</a>.</p>
 			</div>
 		</footer>
@@ -1377,8 +1377,8 @@ any links that you are not going to use.
   "url": "https://carpentries-incubator.github.io/R-ecology-lesson-intermediate/aio.html",
   "identifier": "https://carpentries-incubator.github.io/R-ecology-lesson-intermediate/aio.html",
   "dateCreated": "2022-09-08",
-  "dateModified": "2022-09-13",
-  "datePublished": "2022-09-13"
+  "dateModified": "2022-09-20",
+  "datePublished": "2022-09-20"
 }
 
   </script><script>
