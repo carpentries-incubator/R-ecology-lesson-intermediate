@@ -75,7 +75,10 @@ surveys_new <- read_csv("data/raw/surveys_new.csv")
 ```
 
 ```{.warning}
-Warning: One or more parsing issues, see `problems()` for details
+Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat <- vroom(...)
+  problems(dat)
 ```
 
 ```{.output}
@@ -367,7 +370,10 @@ read_csv("data/raw/surveys_new.csv") %>%
 ```
 
 ```{.warning}
-Warning: One or more parsing issues, see `problems()` for details
+Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat <- vroom(...)
+  problems(dat)
 ```
 
 ```{.output}
